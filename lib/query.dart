@@ -4,6 +4,19 @@ import 'package:html/dom.dart';
 
 import 'package:vortaron/wordclass.dart';
 
+const enValidPartsOfSpeech = {
+  "Noun": partOfSpeech.NOUN,
+  "Verb": partOfSpeech.VERB,
+  "Adjective": partOfSpeech.ADJECTIVE,
+  "Adverb": partOfSpeech.ADVERB,
+  "Particle": partOfSpeech.PARTICLE,
+  "Determiner": partOfSpeech.DETERMINER,
+  "Article": partOfSpeech.ARTICLE,
+  "Conjunction": partOfSpeech.CONJUNCTION,
+  "Preposition": partOfSpeech.PREPOSITION,
+  "Interjection": partOfSpeech.INTERJECTION
+};
+
 /// Looks up the word in the Wiktionary.
 Future<Definition?> lookupWord(String word, String inLanguage, String forLanguage) async {
   final client = Dio();
@@ -24,13 +37,55 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
   if (langHeader == null) throw Exception("$word is not a word in $inLanguage (via $forLanguage)");
   Element? currentElement = langHeader.nextElementSibling;
   List<Element> langSection = [];
-  while (true) {
+  bool foundEnd = false;
+  while (!foundEnd) {
     if (currentElement == null) return null;
-    else if (currentElement.outerHtml.toLowerCase().startsWith("<hr ")) break;
+    else if ((currentElement.localName ?? "").toLowerCase() == "hr") foundEnd = true;
     else {
       langSection.add(currentElement);
       currentElement = currentElement.nextElementSibling;
     }
   }
+  var html = parse(langSection.join());
+  List<PartDefinition> partDefinitions = [];
+  for (var list in langSection.where((element) => (element.localName ?? "").toLowerCase() == "ol")) {
+    Element? header = list.previousElementSibling;
+    if (header?.localName == "p") header = header?.previousElementSibling;
+    // Parts of Speech
+    String htxt = (header?.text ?? "Particle[edit]")
+    .replaceAll('[edit]', '')
+    .replaceAll(r'[\n\r]', '');
+    if (forLanguage == "English" && enValidPartsOfSpeech.keys.contains(htxt))
+      partDefinitions.add(
+        PartDefinition(
+          part: enValidPartsOfSpeech[htxt], 
+          definitions: [
+            for (var listItem in list.children) listItem.text
+          ]
+        )
+      );
+  }
+  // Hyphenation and name
+  late String hyphenation;
+  try {
+    hyphenation = langSection.where((element) => element.text.startsWith("Hyphenation: ")).first.text.replaceAll("Hyphenation: ", "");
+  } catch(_) {
+    try {
+      hyphenation = response.data["displaytitle"];
+    } catch(_) {
+      hyphenation = word;
+    }
+  }
+  // Etymology
+  String? etymology;
+  for (var sect in langSection.where((element) => element.previousElementSibling?.text.startsWith("Etymology") == true)) {
+    etymology = sect.text;
+  }
+  //return 
+  final def = Definition(
+    partsOfSpeech: partDefinitions,
+    etymology: etymology,
+    hyphenation: hyphenation
+  );
   throw UnimplementedError();
 }

@@ -52,8 +52,8 @@ class _HomePageState extends State<HomePage> {
                               : "errors.generic")
                               .tr(namedArgs: {"word": controller.text, "wordLang": "Esperanto", "appLang": "English"}),
                             actions: [
-                              TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok"))
-                            ],
+                              TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
+                            ]
                           )
                         ));
                       }, 
