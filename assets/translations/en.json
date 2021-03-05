@@ -1,0 +1,15 @@
+{
+    "homeScreen": {
+        "wordBox": "Word to define",
+        "sourceLanguage": "Definition language",
+        "wordLanguage": "Word language",
+        "translateAction": "Translate"
+    },
+    "language": {
+        "name": {
+            "en": "English",
+            "eo": "Esperanto",
+            "la": "Latin"
+        }
+    }
+}
