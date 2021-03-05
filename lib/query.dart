@@ -20,7 +20,7 @@ const enValidPartsOfSpeech = {
 /// Looks up the word in the Wiktionary.
 Future<Definition?> lookupWord(String word, String inLanguage, String forLanguage) async {
   final client = Dio();
-  var response = await client.get("https://en.wiktionary.com/w/api.php?action=parse&format=json&prop=text|revid|displaytitle&page=$word");
+  var response = await client.get("https://en.wiktionary.com/w/api.php?action=parse&format=json&prop=text|revid|displaytitle|categories&page=$word");
   //print(response.data);
   var document = parse(response.data["parse"]["text"]["*"]);
   var langHeader = document.children
@@ -71,7 +71,7 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
     hyphenation = langSection.where((element) => element.text.startsWith("Hyphenation: ")).first.text.replaceAll("Hyphenation: ", "");
   } catch(_) {
     try {
-      hyphenation = response.data["displaytitle"];
+      hyphenation = response.data["parse"]["displaytitle"];
     } catch(_) {
       hyphenation = word;
     }
@@ -81,11 +81,17 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
   for (var sect in langSection.where((element) => element.previousElementSibling?.text.startsWith("Etymology") == true)) {
     etymology = sect.text;
   }
+  // Categories
+  List<String> categories = [];
+  for (var category in response.data["parse"]["categories"]) {
+    categories.add(category["*"]);
+  }
   //return 
   final def = Definition(
     partsOfSpeech: partDefinitions,
     etymology: etymology,
-    hyphenation: hyphenation
+    hyphenation: hyphenation,
+    lemma: categories.contains(inLanguage+" lemmas")
   );
-  throw UnimplementedError();
+  return def;
 }

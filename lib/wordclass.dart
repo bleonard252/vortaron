@@ -2,10 +2,12 @@ class Definition {
   final List<PartDefinition> partsOfSpeech;
   final String? etymology;
   final String? hyphenation;
+  final bool lemma;
   Definition({
     required this.partsOfSpeech,
     this.etymology,
     this.hyphenation,
+    this.lemma = true,
   });
 }
 

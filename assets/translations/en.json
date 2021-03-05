@@ -8,6 +8,21 @@
     "buttons": {
         "ok": "OK"
     },
+    "definitionScreen": {
+        "etymology": "Etymology",
+        "partOfSpeech": {
+            "NOUN": "Noun",
+            "VERB": "Verb",
+            "ADJECTIVE": "Adjective",
+            "ADVERB": "Adverb",
+            "PARTICLE": "Particle",
+            "DETERMINER": "Determiner",
+            "ARTICLE": "Article",
+            "CONJUNCTION": "Conjunction",
+            "PREPOSITION": "Preposition",
+            "INTERJECTION": "Interjection"
+        }
+    },
     "language": {
         "name": {
             "en": "English",

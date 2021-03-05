@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:mdi/mdi.dart';
 import 'package:vortaron/query.dart';
+import 'package:vortaron/views/definition.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -38,11 +39,15 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         final _x = lookupWord(controller.text, "Esperanto", "English");
                         SpinningScreen.showIn(context, until: _x);
-                        _x.then((__) => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                              Container(color: Colors.blue)
+                        _x.then((definition) => definition != null ? Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => DefinitionScreen(definition: definition))
+                        ) : showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text("errors.generic").tr(),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
+                            ]
                           )
                         )).onError((error, stackTrace) => showDialog(
                           context: context,
