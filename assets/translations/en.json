@@ -3,7 +3,10 @@
         "wordBox": "Word to define",
         "sourceLanguage": "Definition language",
         "wordLanguage": "Word language",
-        "translateAction": "Translate"
+        "defineAction": "Define"
+    },
+    "buttons": {
+        "ok": "OK"
     },
     "language": {
         "name": {
@@ -11,5 +14,10 @@
             "eo": "Esperanto",
             "la": "Latin"
         }
+    },
+    "errors": {
+        "notAWord": "{word} is not a word in {wordLang} in the {appLang} dictionary.",
+        "notFound": "{word} does not exist in the {appLang} dictionary.",
+        "generic": "An error occurred."
     }
 }

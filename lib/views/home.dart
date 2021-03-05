@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:mdi/mdi.dart';
+import 'package:vortaron/query.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -34,8 +35,29 @@ class _HomePageState extends State<HomePage> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
-                      onPressed: () => null, 
-                      child: Text("homeScreen.translateAction").tr()
+                      onPressed: () {
+                        final _x = lookupWord(controller.text, "Esperanto", "English");
+                        SpinningScreen.showIn(context, until: _x);
+                        _x.then((__) => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                              Container(color: Colors.blue)
+                          )
+                        )).onError((error, stackTrace) => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text(
+                              error.toString().contains("not a word") ? "errors.notAWord" 
+                              : "errors.generic")
+                              .tr(namedArgs: {"word": controller.text, "wordLang": "Esperanto", "appLang": "English"}),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok"))
+                            ],
+                          )
+                        ));
+                      }, 
+                      child: Text("homeScreen.defineAction").tr()
                     ),
                   ),
                 )
@@ -60,11 +82,11 @@ class SpinningScreen extends StatelessWidget {
     );
   }
 
-  static showIn(BuildContext context, {required Future until, required Widget toScreen}) {
+  static showIn(BuildContext context, {required Future until, /* required Widget toScreen */}) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => SpinningScreen()));
-    until.then((value) {
+    until.whenComplete(() {
       Navigator.pop(context);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => toScreen));
+      //Navigator.push(context, MaterialPageRoute(builder: (context) => toScreen));
     });
   }
 }
