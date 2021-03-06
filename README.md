@@ -7,8 +7,8 @@ The tricky part is knowing what to put in:
 * Latin: use the 1st person present active indicative (1st principal part, i.e. amo, venio).
 
 Currently missing features:
-* English support as a word language.
-* Latin support as a word language.
+* ~~English support as a word language.~~
+* ~~Latin support as a word language.~~
 * Esperanto support as an app language.
 * IPA for pronunciation.
 * Links in some places, maybe.

@@ -23,12 +23,10 @@
             "INTERJECTION": "Interjection"
         }
     },
-    "language": {
-        "name": {
-            "en": "English",
-            "eo": "Esperanto",
-            "la": "Latin"
-        }
+    "languages": {
+        "en": "English",
+        "eo": "Esperanto",
+        "la": "Latin"
     },
     "errors": {
         "notAWord": "{word} is not a word in {wordLang} in the {appLang} dictionary.",

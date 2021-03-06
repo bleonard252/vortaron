@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
 
@@ -18,9 +19,15 @@ const enValidPartsOfSpeech = {
 };
 
 /// Looks up the word in the Wiktionary.
-Future<Definition?> lookupWord(String word, String inLanguage, String forLanguage) async {
-  final client = Dio();
+Future<Definition?> lookupWord(String word, String inLanguageCode, String forLanguage) async {
+  String inLanguage = tr("languages."+inLanguageCode);
+  final client = Dio(BaseOptions(
+    followRedirects: true
+  ));
   var response = await client.get("https://en.wiktionary.com/w/api.php?action=parse&format=json&prop=text|revid|displaytitle|categories&page=$word");
+  if (response.data.containsKey("error")) {
+    throw Exception("$word was not found in the $forLanguage dictionary");
+  }
   //print(response.data);
   var document = parse(response.data["parse"]["text"]["*"]);
   var langHeader = document.children
@@ -39,7 +46,7 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
   List<Element> langSection = [];
   bool foundEnd = false;
   while (!foundEnd) {
-    if (currentElement == null) return null;
+    if (currentElement == null) foundEnd = true;
     else if ((currentElement.localName ?? "").toLowerCase() == "hr") foundEnd = true;
     else {
       langSection.add(currentElement);
@@ -66,7 +73,7 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
       );
   }
   // Hyphenation and name
-  late String hyphenation;
+  String hyphenation = response.data["parse"]["displaytitle"];
   try {
     //hyphenation = langSection.where((element) => element.localName == "ui").firstWhere((element) => element.ha?.firstChild?.text?.startsWith("Hyphenation: ") ?? false).firstChild?.text.replaceAll("Hyphenation: ", "");
     for (var x in html.querySelectorAll("ul>li>span.Latn")) {

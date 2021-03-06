@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:mdi/mdi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vortaron/query.dart';
 import 'package:vortaron/views/definition.dart';
 
@@ -11,12 +12,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController controller = TextEditingController();
+  String language = "";
   @override
   Widget build(BuildContext context) {
+    SharedPreferences.getInstance().then((instance) => setState(() => language = instance.getString("wordLanguage") ?? (language != "" ? language : "en")));
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Mdi.bookAlphabet),
-        title: Text("Vortaro"),
+        title: Text("Vortaron"),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -37,7 +40,7 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        final _x = lookupWord(controller.text, "Esperanto", "English");
+                        final _x = lookupWord(controller.text, language, "English");
                         SpinningScreen.showIn(context, until: _x);
                         _x.then((definition) => definition != null ? Navigator.push(
                           context, MaterialPageRoute(builder: (context) => DefinitionScreen(definition: definition))
@@ -54,8 +57,9 @@ class _HomePageState extends State<HomePage> {
                           builder: (context) => AlertDialog(
                             title: Text(
                               error.toString().contains("not a word") ? "errors.notAWord" 
+                              : error.toString().contains("not found") ? "errors.notFound" 
                               : "errors.generic")
-                              .tr(namedArgs: {"word": controller.text, "wordLang": "Esperanto", "appLang": "English"}),
+                              .tr(namedArgs: {"word": controller.text, "wordLang": language, "appLang": "English"}),
                             actions: [
                               TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
                             ]
@@ -67,6 +71,27 @@ class _HomePageState extends State<HomePage> {
                   ),
                 )
               ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButtonFormField(
+                items: [
+                  DropdownMenuItem(child: Text("languages.en").tr(), value: "en"),
+                  DropdownMenuItem(child: Text("languages.eo").tr(), value: "eo"),
+                  DropdownMenuItem(child: Text("languages.la").tr(), value: "la"),
+                ],
+                onChanged: (newValue) {
+                  setState(() => language = newValue.toString());
+                  (() async {
+                    var sp = await SharedPreferences.getInstance();
+                    sp.setString("wordLanguage", language);
+                  })();
+                },
+                value: language,
+                decoration: InputDecoration(
+                  labelText: tr("homeScreen.wordLanguage") //Defini la vorton
+                ),
+              ),
             )
           ],
         ),

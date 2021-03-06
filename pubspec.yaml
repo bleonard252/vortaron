@@ -28,6 +28,7 @@ dependencies:
   dio: ^4.0.0-beta4
   html: ^0.15.0
   just_audio: ^0.7.0
+  shared_preferences: ^2.0.3
 
 dev_dependencies:
   flutter_test:
