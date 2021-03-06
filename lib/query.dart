@@ -96,7 +96,7 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
     etymology: etymology,
     hyphenation: hyphenation,
     lemma: categories.contains(inLanguage+" lemmas"),
-    audioClip: html.querySelector(".audiometa>a")?.attributes["href"]
+    audioClip: html.querySelector("audio")?.firstChild?.attributes["src"]?.replaceFirst("//", "https://")
   );
   return def;
 }
