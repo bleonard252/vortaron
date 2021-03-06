@@ -41,5 +41,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>I'm not using the microphone. This permission is required to play sounds, for some reason.</string>
 </dict>
 </plist>

@@ -1,13 +1,20 @@
 class Definition {
+  /// The list of possible parts of speech and definitions.
   final List<PartDefinition> partsOfSpeech;
+  /// The word's etymology string.
   final String? etymology;
-  final String? hyphenation;
+  /// The hyphenation or name of this word.
+  final String hyphenation;
+  /// Whether this word is the lemma.
   final bool lemma;
+  /// The audio clip URL that says the word.
+  final String? audioClip;
   Definition({
     required this.partsOfSpeech,
     this.etymology,
-    this.hyphenation,
+    required this.hyphenation,
     this.lemma = true,
+    this.audioClip
   });
 }
 

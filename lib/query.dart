@@ -46,7 +46,7 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
       currentElement = currentElement.nextElementSibling;
     }
   }
-  var html = parse(langSection.join());
+  var html = parse(langSection.map<String>((e) => e.outerHtml).join());
   List<PartDefinition> partDefinitions = [];
   for (var list in langSection.where((element) => (element.localName ?? "").toLowerCase() == "ol")) {
     Element? header = list.previousElementSibling;
@@ -68,7 +68,11 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
   // Hyphenation and name
   late String hyphenation;
   try {
-    hyphenation = langSection.where((element) => element.text.startsWith("Hyphenation: ")).first.text.replaceAll("Hyphenation: ", "");
+    //hyphenation = langSection.where((element) => element.localName == "ui").firstWhere((element) => element.ha?.firstChild?.text?.startsWith("Hyphenation: ") ?? false).firstChild?.text.replaceAll("Hyphenation: ", "");
+    for (var x in html.querySelectorAll("ul>li>span.Latn")) {
+      final _y = x.parent?.text.replaceFirst("Hyphenation: ", "");
+      if (_y != null && (x.parent?.text.startsWith("Hyphenation: ") ?? false)) hyphenation = _y;
+    }
   } catch(_) {
     try {
       hyphenation = response.data["parse"]["displaytitle"];
@@ -91,7 +95,8 @@ Future<Definition?> lookupWord(String word, String inLanguage, String forLanguag
     partsOfSpeech: partDefinitions,
     etymology: etymology,
     hyphenation: hyphenation,
-    lemma: categories.contains(inLanguage+" lemmas")
+    lemma: categories.contains(inLanguage+" lemmas"),
+    audioClip: html.querySelector(".audiometa>a")?.attributes["href"]
   );
   return def;
 }
