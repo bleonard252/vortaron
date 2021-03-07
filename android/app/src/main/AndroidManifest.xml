@@ -2,7 +2,7 @@
     package="xyz.blogold.vortaron">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="vortaron"
+        android:label="Vortaron"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
