@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="xyz.blogold.vortaron">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="vortaron"
         android:icon="@mipmap/ic_launcher">
