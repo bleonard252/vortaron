@@ -8,6 +8,8 @@
     "buttons": {
         "ok": "OK"
     },
+    "fetching": "Looking it up...",
+    "refetching": "Finding the right definition for your word...",
     "definitionScreen": {
         "etymology": "Etymology",
         "partOfSpeech": {
@@ -32,7 +34,10 @@
     "languages": {
         "en": "English",
         "eo": "Esperanto",
-        "la": "Latin"
+        "la": "Latin",
+        "English": "English",
+        "Esperanto": "Esperanto",
+        "Latin": "Latin"
     },
     "errors": {
         "notAWord": "{word} is not a word in {wordLang} in the {appLang} dictionary.",

@@ -71,7 +71,14 @@ class DefinitionScreen extends StatelessWidget {
               ),
               for (var def in part.definitions) Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text("${(part.definitions.indexOf(def)+1).toString()}. ${def.split('\n').first}"),
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
+                    text: "${(part.definitions.indexOf(def)+1).toString()}. ",
+                    children: [WidgetSpan(child: def, alignment: PlaceholderAlignment.top)]
+                  ),
+                ),
+                //child: Text("${(part.definitions.indexOf(def)+1).toString()}. ${def.split('\n').first}"),
               )
             ]
           ],

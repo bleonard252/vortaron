@@ -39,33 +39,7 @@ class _HomePageState extends State<HomePage> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        final _x = lookupWord(controller.text, language, "English");
-                        SpinningScreen.showIn(context, until: _x);
-                        _x.then((definition) => definition != null ? Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => DefinitionScreen(definition: definition))
-                        ) : showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text("errors.generic").tr(),
-                            actions: [
-                              TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
-                            ]
-                          )
-                        )).onError((error, stackTrace) => showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text(
-                              error.toString().contains("not a word") ? "errors.notAWord" 
-                              : error.toString().contains("not found") ? "errors.notFound" 
-                              : "errors.generic")
-                              .tr(namedArgs: {"word": controller.text, "wordLang": language, "appLang": "English"}),
-                            actions: [
-                              TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
-                            ]
-                          )
-                        ));
-                      }, 
+                      onPressed: () => define(controller.text, language, context),
                       child: Text("homeScreen.defineAction").tr()
                     ),
                   ),
@@ -100,14 +74,53 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+define(String word, String wordLanguage, BuildContext context) {
+  final _x = lookupWord(word, wordLanguage, "English");
+  SpinningScreen.showIn(context, until: _x);
+  _x.then((definition) => definition != null ? Navigator.push(
+    context, MaterialPageRoute(builder: (context) => DefinitionScreen(definition: definition))
+  ) : showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("errors.generic").tr(),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
+      ]
+    )
+  )).onError((error, stackTrace) => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        error.toString().contains("not a word") ? "errors.notAWord" 
+        : error.toString().contains("not found") ? "errors.notFound" 
+        : "errors.generic")
+        .tr(namedArgs: {"word": word, "wordLang": wordLanguage, "appLang": "English"}),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
+      ]
+    )
+  ));
+}
+
 class SpinningScreen extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
       color: Colors.black54,
       child: Center(
-        child: CircularProgressIndicator(value: null),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(value: null),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("fetching", style: Theme.of(context).textTheme.headline6?.copyWith(color: Colors.white)).tr(),
+            )
+          ],
+        ),
       ),
     );
   }

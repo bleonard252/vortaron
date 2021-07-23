@@ -26,7 +26,7 @@ const _emptyList = [];
 class PartDefinition {
   final partOfSpeech? part;
   final List<String>? qualifiers;
-  final List<String> definitions;
+  final List definitions;
   PartDefinition({
     required this.part,
     this.qualifiers,

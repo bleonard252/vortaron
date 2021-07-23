@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/widgets.dart' show Builder;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
+import 'package:vortaron/definitionToWidget.dart';
 
 import 'package:vortaron/wordclass.dart';
 
@@ -69,7 +71,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
         PartDefinition(
           part: enValidPartsOfSpeech[htxt], 
           definitions: [
-            for (var listItem in list.children) listItem.text
+            for (var listItem in list.children) Builder(builder: (context) => definitionToWidget(listItem, context, allowedLang: inLanguage))//listItem.text
           ],
         )
       );
