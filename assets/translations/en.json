@@ -11,7 +11,9 @@
     "definitionScreen": {
         "etymology": "Etymology",
         "partOfSpeech": {
+            "LETTER": "Letter",
             "NOUN": "Noun",
+            "PRONOUN": "Pronoun",
             "VERB": "Verb",
             "ADJECTIVE": "Adjective",
             "ADVERB": "Adverb",
@@ -21,6 +23,10 @@
             "CONJUNCTION": "Conjunction",
             "PREPOSITION": "Preposition",
             "INTERJECTION": "Interjection"
+        },
+        "indicators": {
+            "nonlemma": "Non-Lemma form",
+            "official": "This is an official or approved word or phrase."
         }
     },
     "languages": {

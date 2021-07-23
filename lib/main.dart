@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:vortaron/views/home.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -25,7 +27,13 @@ class MyApp extends StatelessWidget {
       title: 'Vortaron',
       theme: ThemeData(
         primarySwatch: Colors.amber,
+        brightness: Brightness.light
       ),
+      darkTheme: ThemeData(
+        primarySwatch: Colors.amber,
+        brightness: Brightness.dark
+      ),
+      themeMode: ThemeMode.system,
       home: HomePage(),
       // i18n with easy_localization
       localizationsDelegates: context.localizationDelegates,

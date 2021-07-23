@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mdi/mdi.dart';
 import 'package:vortaron/wordclass.dart';
 import 'package:vortaron/query.dart' show enValidPartsOfSpeech;
 import 'package:easy_localization/easy_localization.dart';
@@ -39,9 +40,22 @@ class DefinitionScreen extends StatelessWidget {
             Wrap( // for icons. not yet implemented
               children: [
                 // lemmas
+                if (!definition.lemma) Tooltip(
+                  message: tr("definitionScreen.indicators.nonlemma"),
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Mdi.lambda)
+                  )
+                ),
+                if (definition.isOfficial) Tooltip(
+                  message: tr("definitionScreen.indicators.official"),
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Mdi.checkDecagram, color: Colors.amber)
+                  )
+                )
               ],
             ),
-            //TODO: the icons and the explanation banner
             if (definition.etymology != null) Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text("definitionScreen.etymology", style: Theme.of(context).textTheme.headline4).tr(),

@@ -6,7 +6,9 @@ import 'package:html/dom.dart';
 import 'package:vortaron/wordclass.dart';
 
 const enValidPartsOfSpeech = {
+  "Letter": partOfSpeech.LETTER,
   "Noun": partOfSpeech.NOUN,
+  "Pronoun": partOfSpeech.PRONOUN,
   "Verb": partOfSpeech.VERB,
   "Adjective": partOfSpeech.ADJECTIVE,
   "Adverb": partOfSpeech.ADVERB,
@@ -68,7 +70,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
           part: enValidPartsOfSpeech[htxt], 
           definitions: [
             for (var listItem in list.children) listItem.text
-          ]
+          ],
         )
       );
   }
@@ -102,7 +104,8 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
     partsOfSpeech: partDefinitions,
     etymology: etymology,
     hyphenation: hyphenation,
-    lemma: categories.contains(inLanguage+" lemmas"),
+    lemma: categories.contains(inLanguage+"_lemmas"),
+    isOfficial: inLanguageCode == "eo" && (categories.contains("Words_approved_by_the_Akademio_de_Esperanto")),
     audioClip: html.querySelector("audio")?.firstChild?.attributes["src"]?.replaceFirst("//", "https://")
   );
   return def;

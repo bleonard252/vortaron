@@ -7,6 +7,8 @@ class Definition {
   final String hyphenation;
   /// Whether this word is the lemma.
   final bool lemma;
+  /// Whether this word is considered "official" (Esperanto only).
+  final bool isOfficial;
   /// The audio clip URL that says the word.
   final String? audioClip;
   Definition({
@@ -14,6 +16,7 @@ class Definition {
     this.etymology,
     required this.hyphenation,
     this.lemma = true,
+    this.isOfficial = false,
     this.audioClip
   });
 }
@@ -32,7 +35,9 @@ class PartDefinition {
 }
 
 enum partOfSpeech {
+  LETTER,
   NOUN,
+  PRONOUN,
   VERB,
   ADJECTIVE,
   ADVERB,
