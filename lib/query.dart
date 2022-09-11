@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
+import 'package:requests/requests.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:html/parser.dart' show parse;
+import 'package:html/parser.dart' show parse, parseFragment;
 import 'package:html/dom.dart';
 
 import 'package:vortaron/wordclass.dart';
@@ -21,15 +21,12 @@ const enValidPartsOfSpeech = {
 /// Looks up the word in the Wiktionary.
 Future<Definition?> lookupWord(String word, String inLanguageCode, String forLanguage) async {
   String inLanguage = tr("languages."+inLanguageCode);
-  final client = Dio(BaseOptions(
-    followRedirects: true
-  ));
-  var response = await client.get("https://en.wiktionary.com/w/api.php?action=parse&format=json&prop=text|revid|displaytitle|categories&page=$word");
-  if (response.data.containsKey("error")) {
+  var response = await Requests.get("https://en.wiktionary.com/w/api.php?action=parse&format=json&prop=text|revid|displaytitle|categories&page=$word#$inLanguage");
+  if (response.json().containsKey("error")) {
     throw Exception("$word was not found in the $forLanguage dictionary");
   }
   //print(response.data);
-  var document = parse(response.data["parse"]["text"]["*"]);
+  var document = parse(response.json()["parse"]["text"]["*"]);
   var langHeader = document.children
   .first.querySelector("h2 > span#$inLanguage")
   ?.parent;
@@ -73,7 +70,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
       );
   }
   // Hyphenation and name
-  String hyphenation = response.data["parse"]["displaytitle"];
+  String hyphenation = parseFragment(response.json()["parse"]["displaytitle"]).text ?? word;
   try {
     //hyphenation = langSection.where((element) => element.localName == "ui").firstWhere((element) => element.ha?.firstChild?.text?.startsWith("Hyphenation: ") ?? false).firstChild?.text.replaceAll("Hyphenation: ", "");
     for (var x in html.querySelectorAll("ul>li>span.Latn")) {
@@ -82,7 +79,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
     }
   } catch(_) {
     try {
-      hyphenation = response.data["parse"]["displaytitle"];
+      hyphenation = parseFragment(response.json()["parse"]["displaytitle"]).text ?? word;
     } catch(_) {
       hyphenation = word;
     }
@@ -94,7 +91,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   }
   // Categories
   List<String> categories = [];
-  for (var category in response.data["parse"]["categories"]) {
+  for (var category in response.json()["parse"]["categories"]) {
     categories.add(category["*"]);
   }
   //return 

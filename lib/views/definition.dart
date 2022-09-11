@@ -21,7 +21,7 @@ class DefinitionScreen extends StatelessWidget {
       player.seek(Duration.zero);
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

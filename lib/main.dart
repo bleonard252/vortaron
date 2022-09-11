@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:vortaron/views/home.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -24,7 +26,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Vortaron',
       theme: ThemeData(
-        primarySwatch: Colors.amber,
+        useMaterial3: true,
+        primarySwatch: Colors.amber, // TODO: make it red when a "cheating" mode is on
       ),
       home: HomePage(),
       // i18n with easy_localization
