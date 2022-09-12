@@ -54,15 +54,23 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   List<PartDefinition> partDefinitions = [];
   for (var list in langSection.where((element) => element.localName?.toLowerCase() == "ol")) {
     Element? header = list.previousElementSibling;
+    final _wordline = header;
     if (header?.localName == "p") header = header?.previousElementSibling;
     // Parts of Speech
     String htxt = (header?.text ?? "Particle[edit]")
     .replaceAll('[edit]', '')
     .replaceAll(RegExp(r'[\n\r]'), '');
+    // Qualifiers
+    final qualifiers = RegExp(r'.*?\((.*)\)').firstMatch(_wordline!.text)?.group(1)?.split(",") ?? [];
+    final _highlyIrreg = qualifiers.indexWhere((element) => element.startsWith("highly irregular"));
+    if (_highlyIrreg != -1) {
+      qualifiers.fillRange(_highlyIrreg, _highlyIrreg+1, "highly irregular");
+    }
     if (forLanguage == "English" && enValidPartsOfSpeech.keys.contains(htxt))
       partDefinitions.add(
         PartDefinition(
-          part: enValidPartsOfSpeech[htxt], 
+          qualifiers: qualifiers,
+          part: enValidPartsOfSpeech[htxt],
           definitions: [
             for (var listItem in list.children) listItem.text
           ],
@@ -106,7 +114,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   for (var category in response.json()["parse"]["categories"]) {
     categories.add(category["*"]);
   }
-  //return 
+  //return
   final def = Definition(
     partsOfSpeech: partDefinitions,
     etymology: etymologies,

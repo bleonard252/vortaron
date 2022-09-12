@@ -92,9 +92,40 @@ class DefinitionScreen extends StatelessWidget {
                         .where((e) => e.etymology == i)) ...[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("definitionScreen.${part.part.toString()}",
-                                style: Theme.of(context).textTheme.headline4)
-                            .tr(),
+                        child: Wrap(
+                          children: [
+                            Text("definitionScreen.${part.part.toString()}",
+                              style: Theme.of(context).textTheme.headline4)
+                              .tr(),
+                            if (part.qualifiers?.contains("irregular") == true) Tooltip(
+                              message: tr("definitionScreen.irregular"),
+                              child: IconButton(
+                                onPressed: () => null,
+                                icon: Icon(Mdi.tableAlert, color: theme.colorScheme.inverseSurface),
+                              ),
+                            ) else if (part.qualifiers?.contains("highly irregular") == true) Tooltip(
+                              message: tr("definitionScreen.irregularHigh"),
+                              child: IconButton(
+                                onPressed: () => null,
+                                icon: Icon(Mdi.tableAlert, color: theme.colorScheme.primary),
+                              ),
+                            ),
+                            if (part.qualifiers?.contains("uncountable") == true) Tooltip(
+                              message: tr("definitionScreen.uncountable"),
+                              child: IconButton(
+                                onPressed: () => null,
+                                icon: Icon(Mdi.numericOff),
+                              ),
+                            ),
+                            if (part.qualifiers?.contains("strong") == true) Tooltip(
+                              message: tr("definitionScreen.strongVerb"),
+                              child: IconButton(
+                                onPressed: () => null,
+                                icon: Icon(Mdi.formatLetterCaseLower),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       for (var def in part.definitions)
                         Padding(
@@ -105,7 +136,7 @@ class DefinitionScreen extends StatelessWidget {
                                 children: [
                                   part.definitionMarkup
                                               ?.map((e) =>
-                                                  InlineHtml(e, theme, context)
+                                                  RichHtml(e, theme, context)
                                                       .build())
                                               .toList()[
                                           part.definitions.indexOf(def)] ??

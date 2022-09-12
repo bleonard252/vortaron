@@ -220,10 +220,12 @@ packages:
   mdi:
     dependency: "direct main"
     description:
-      name: mdi
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.0-nullsafety.0"
+      path: mdi
+      ref: HEAD
+      resolved-ref: "056a7a7a3377378e63869e400f9e39dd071a6c04"
+      url: "https://github.com/bleonard252/mdi-dart"
+    source: git
+    version: "7.0.96"
   meta:
     dependency: transitive
     description:

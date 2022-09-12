@@ -60,6 +60,9 @@
             "declensions": "Declensions",
             "inflections": "Inflections"
         },
+        "uncountable": "Uncountable",
+        "irregular": "Irregular",
+        "irregularHigh": "Highly irregular",
         "partOfSpeech": {
             "NOUN": "Noun",
             "VERB": "Verb",

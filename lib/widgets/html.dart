@@ -8,29 +8,35 @@ import 'package:vortaron/views/home.dart';
 
 import '../views/definition.dart';
 
-class InlineHtml {
+final emptySpan = WidgetSpan(child: Container(height: 0, width: 0));
+
+class RichHtml {
   final dom.Node element;
   final ThemeData theme;
+  final bool inlineOnly;
   final BuildContext? context;
-  InlineHtml(this.element, this.theme, [this.context]);
+  RichHtml(this.element, this.theme, [this.context, this.inlineOnly = false]);
   InlineSpan build() {
     if (element is dom.Text) {
       return TextSpan(text: element.text);
     } else if (element is dom.Element) {
       final element = this.element as dom.Element;
       if (element.localName == 'br') {
-        return TextSpan(text: "\n");
+        //return TextSpan(text: "\n");
+        return emptySpan;
       } else if (element.localName == 'i' || element.localName == 'em') {
         return TextSpan(
           children: element.children
-              .map((e) => InlineHtml(e, theme, context).build())
+              .map((e) => RichHtml(e, theme, context).build())
+              .where((e) => e != emptySpan)
               .toList(),
           style: TextStyle(fontStyle: FontStyle.italic),
         );
       } else if (element.localName == 'b' || element.localName == 'strong') {
         return TextSpan(
           children: element.children
-              .map((e) => InlineHtml(e, theme, context).build())
+              .map((e) => RichHtml(e, theme, context).build())
+              .where((e) => e != emptySpan)
               .toList(),
           style: TextStyle(fontWeight: FontWeight.bold),
         );
@@ -88,12 +94,29 @@ class InlineHtml {
                   decorationStyle: TextDecorationStyle.dotted,
                   decorationThickness: 1));
         }
+      } else if (element.localName == 'ul') {
+        //TODO: bullet lists
+        return emptySpan; // an empty span for now
+      } else if (element.localName == 'div' && element.classes.contains("h-usage-example")) {
+        return TextSpan(
+          //text: "\n",
+          children: [TextSpan(text: element.text)],
+          // TODO: bullet lists are needed for this
+          // children: element.nodes
+          //   .map((e) => RichHtml(e, theme, context).build())
+          //   .toList(),
+          style: TextStyle(
+            color: theme.textTheme.bodyText1?.color?.withOpacity(0.7)
+          )
+        );
+      } else if (element.localName == 'div' && element.classes.contains("citation-whole")) {
+        return emptySpan; // an empty span; don't show these
       }
     }
     // Fallback behavior: parse the children, ignoring the tag
     return TextSpan(
         children:
-            element.nodes.map((e) => InlineHtml(e, theme, context).build()).toList());
+            element.nodes.map((e) => RichHtml(e, theme, context).build()).where((e) => e != emptySpan).toList());
   }
 }
 
