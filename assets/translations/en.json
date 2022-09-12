@@ -10,6 +10,56 @@
     },
     "definitionScreen": {
         "etymology": "Etymology",
+        "tabs": {
+            "definition": "Definition",
+            "thesaurus": "Thesaurus",
+            "examples": "Examples",
+            "translation": "Translations",
+            "charts": {
+                "title_generic": "Charts",
+                "noun": {
+                    "form": "GENDER CASE PERSON NUMBER",
+                    "gen_m": "masculine",
+                    "gen_f": "feminine",
+                    "gen_n": "neuter",
+                    "num_sg": "singular",
+                    "num_pl": "plural",
+                    "case_nom": "nominative",
+                    "case_gen": "genitive",
+                    "case_dat": "dative",
+                    "case_acc": "accusative",
+                    "case_ins": "instrumental",
+                    "case_abl": "ablative",
+                    "case_loc": "locative",
+                    "case_voc": "vocative",
+                    "person_first": "first person",
+                    "person_second": "second person",
+                    "person_third": "third person"
+                },
+                "verb": {
+                    "tense_pres": "present",
+                    "tense_imp": "imperfect",
+                    "tense_fut": "future",
+                    "tense_perf": "perfect",
+                    "tense_plup": "pluperfect",
+                    "tense_fuper": "future perfect",
+                    "mood_ind": "indicative",
+                    "mood_subj": "subjunctive",
+                    "mood_imp": "imperative",
+                    "mood_inf": "infinitive",
+                    "mood_part": "participle",
+                    "mood_ger": "gerund",
+                    "mood_sup": "supine",
+                    "voice_a": "active",
+                    "voice_p": "passive",
+                    "num_sg": "singular",
+                    "num_pl": "plural"
+                }
+            },
+            "conjugations": "Conjugations",
+            "declensions": "Declensions",
+            "inflections": "Inflections"
+        },
         "partOfSpeech": {
             "NOUN": "Noun",
             "VERB": "Verb",

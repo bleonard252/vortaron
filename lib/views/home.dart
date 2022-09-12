@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                     sp.setString("wordLanguage", language);
                   })();
                 },
-                value: language,
+                value: language == "" ? "en" : language,
                 decoration: InputDecoration(
                   labelText: tr("homeScreen.wordLanguage") //Defini la vorton
                 ),
@@ -113,7 +113,7 @@ class SpinningScreen extends StatelessWidget {
   }
 
   static showIn(BuildContext context, {required Future until, /* required Widget toScreen */}) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => SpinningScreen()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SpinningScreen(), fullscreenDialog: true));
     until.whenComplete(() {
       Navigator.pop(context);
       //Navigator.push(context, MaterialPageRoute(builder: (context) => toScreen));

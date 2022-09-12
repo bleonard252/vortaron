@@ -1,7 +1,7 @@
 import 'package:requests/requests.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:html/parser.dart' show parse, parseFragment;
-import 'package:html/dom.dart';
+import 'package:html/dom.dart' show Element;
 
 import 'package:vortaron/wordclass.dart';
 
@@ -21,7 +21,7 @@ const enValidPartsOfSpeech = {
 /// Looks up the word in the Wiktionary.
 Future<Definition?> lookupWord(String word, String inLanguageCode, String forLanguage) async {
   String inLanguage = tr("languages."+inLanguageCode);
-  var response = await Requests.get("https://en.wiktionary.com/w/api.php?action=parse&format=json&prop=text|revid|displaytitle|categories&page=$word#$inLanguage");
+  var response = await Requests.get("https://en.wiktionary.com/w/api.php?action=parse&format=json&prop=text|revid|displaytitle|categories&redirects=true&page=$word#$inLanguage");
   if (response.json().containsKey("error")) {
     throw Exception("$word was not found in the $forLanguage dictionary");
   }
@@ -52,20 +52,25 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   }
   var html = parse(langSection.map<String>((e) => e.outerHtml).join());
   List<PartDefinition> partDefinitions = [];
-  for (var list in langSection.where((element) => (element.localName ?? "").toLowerCase() == "ol")) {
+  for (var list in langSection.where((element) => element.localName?.toLowerCase() == "ol")) {
     Element? header = list.previousElementSibling;
     if (header?.localName == "p") header = header?.previousElementSibling;
     // Parts of Speech
     String htxt = (header?.text ?? "Particle[edit]")
     .replaceAll('[edit]', '')
-    .replaceAll(r'[\n\r]', '');
+    .replaceAll(RegExp(r'[\n\r]'), '');
     if (forLanguage == "English" && enValidPartsOfSpeech.keys.contains(htxt))
       partDefinitions.add(
         PartDefinition(
           part: enValidPartsOfSpeech[htxt], 
           definitions: [
             for (var listItem in list.children) listItem.text
-          ]
+          ],
+          definitionMarkup: [
+            for (var listItem in list.children) listItem
+          ],
+          // This elaborate spaghetti line determines which etymology the definition is under.
+          etymology: (header?.parent?.children.where((e) => e == header || (e.localName?.toLowerCase() == "h3" && e.text.startsWith("Etymology"))).toList().indexOf(header) ?? 1) - 1
         )
       );
   }
@@ -85,9 +90,16 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
     }
   }
   // Etymology
-  String? etymology;
+  List<String> etymologies = [];
+  List<Element> etymologiesMarkup = [];
   for (var sect in langSection.where((element) => element.previousElementSibling?.text.startsWith("Etymology") == true)) {
-    etymology = sect.text;
+    if (sect.localName == "p") {
+      etymologies.add(sect.text);
+      etymologiesMarkup.add(sect);
+    } else {
+      etymologies.add("");
+      etymologiesMarkup.add(Element.tag("p"));
+    }
   }
   // Categories
   List<String> categories = [];
@@ -97,7 +109,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   //return 
   final def = Definition(
     partsOfSpeech: partDefinitions,
-    etymology: etymology,
+    etymology: etymologies,
     hyphenation: hyphenation,
     lemma: categories.contains(inLanguage+" lemmas"),
     audioClip: html.querySelector("audio")?.firstChild?.attributes["src"]?.replaceFirst("//", "https://")

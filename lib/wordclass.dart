@@ -1,8 +1,10 @@
+import 'package:html/parser.dart';
+
 class Definition {
   /// The list of possible parts of speech and definitions.
   final List<PartDefinition> partsOfSpeech;
   /// The word's etymology string.
-  final String? etymology;
+  final List<String> etymology;
   /// The hyphenation or name of this word.
   final String hyphenation;
   /// Whether this word is the lemma.
@@ -11,7 +13,7 @@ class Definition {
   final String? audioClip;
   Definition({
     required this.partsOfSpeech,
-    this.etymology,
+    this.etymology = const [],
     required this.hyphenation,
     this.lemma = true,
     this.audioClip
@@ -22,12 +24,18 @@ const _emptyList = [];
 /// A block of definitions, associated by part of speech.
 class PartDefinition {
   final partOfSpeech? part;
+  /// Which etymology from the list it is under. Invalid values will be added
+  /// to the end.
+  final int etymology;
   final List<String>? qualifiers;
   final List<String> definitions;
+  final List<dynamic>? definitionMarkup;
   PartDefinition({
     required this.part,
     this.qualifiers,
-    required this.definitions
+    this.etymology = 0,
+    required this.definitions,
+    this.definitionMarkup
   });
 }
 
