@@ -17,6 +17,12 @@ class RichHtml {
   final BuildContext? context;
   RichHtml(this.element, this.theme, [this.context, this.inlineOnly = false]);
   InlineSpan build() {
+    List<InlineSpan> buildAgain({List<dom.Node>? nodes, bool? inlineOnly}) {
+      return (nodes ?? element.nodes)
+        .map((e) => RichHtml(e, theme, context, inlineOnly ?? this.inlineOnly).build())
+        .where((e) => e != emptySpan)
+        .toList();
+    }
     if (element is dom.Text) {
       return TextSpan(text: element.text);
     } else if (element is dom.Element) {
@@ -26,18 +32,12 @@ class RichHtml {
         return emptySpan;
       } else if (element.localName == 'i' || element.localName == 'em') {
         return TextSpan(
-          children: element.children
-              .map((e) => RichHtml(e, theme, context).build())
-              .where((e) => e != emptySpan)
-              .toList(),
+          children: buildAgain(),
           style: TextStyle(fontStyle: FontStyle.italic),
         );
       } else if (element.localName == 'b' || element.localName == 'strong') {
         return TextSpan(
-          children: element.children
-              .map((e) => RichHtml(e, theme, context).build())
-              .where((e) => e != emptySpan)
-              .toList(),
+          children: buildAgain(),
           style: TextStyle(fontWeight: FontWeight.bold),
         );
       } else if (element.localName == 'a') {
@@ -85,26 +85,59 @@ class RichHtml {
                 ));
               }
           );
+        } else if (element.attributes['href']?.startsWith("/wiki/") == true && link.article == tr("lookup.glossary")) {
+          return TextSpan(
+            text: element.text,
+            style: TextStyle(
+              decorationColor: theme.disabledColor,
+              decoration: TextDecoration.underline,
+              decorationStyle: TextDecorationStyle.solid,
+              decorationThickness: 1
+            )
+          );
+        } else if (element.attributes['href']?.startsWith("/wiki/") == true) {
+          return TextSpan(
+            text: element.text,
+            style: TextStyle(
+              decorationColor: theme.colorScheme.primary,
+              decoration: TextDecoration.underline,
+              decorationStyle: TextDecorationStyle.dotted,
+              decorationThickness: 1
+            )
+          );
         } else {
           return TextSpan(
-              text: element.text,
-              style: TextStyle(
-                  decorationColor: Colors.red,
-                  decoration: TextDecoration.underline,
-                  decorationStyle: TextDecorationStyle.dotted,
-                  decorationThickness: 1));
+            children: buildAgain()
+          );
         }
-      } else if (element.localName == 'ul') {
-        //TODO: bullet lists
-        return emptySpan; // an empty span for now
+      } else if (element.localName == 'ul' && element.getElementsByClassName("citation-whole").length > 0) {
+        return emptySpan; // an empty span; don't show these
+      } else if (element.localName == 'ul' && element.getElementsByTagName("dl").length > 0) {
+        return emptySpan; // an empty span; don't show these
+      } else if (!inlineOnly && element.localName == 'ul') {
+        return WidgetSpan(child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: Container(
+                  //width: 24,
+                  child: Text(" · ", textAlign: TextAlign.end)
+                ),
+              ),
+              Expanded(
+                child: Text.rich(TextSpan(
+                children: buildAgain(nodes: element.getElementsByTagName("li"))))
+              )
+            ]
+          )
+        ));
       } else if (element.localName == 'div' && element.classes.contains("h-usage-example")) {
         return TextSpan(
           //text: "\n",
-          children: [TextSpan(text: element.text)],
-          // TODO: bullet lists are needed for this
-          // children: element.nodes
-          //   .map((e) => RichHtml(e, theme, context).build())
-          //   .toList(),
+          children: buildAgain(),
           style: TextStyle(
             color: theme.textTheme.bodyText1?.color?.withOpacity(0.7)
           )
@@ -114,9 +147,8 @@ class RichHtml {
       }
     }
     // Fallback behavior: parse the children, ignoring the tag
-    return TextSpan(
-        children:
-            element.nodes.map((e) => RichHtml(e, theme, context).build()).where((e) => e != emptySpan).toList());
+    if (element.nodes.length == 0) return emptySpan;
+    return TextSpan(children: buildAgain());
   }
 }
 

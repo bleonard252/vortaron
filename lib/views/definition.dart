@@ -129,19 +129,31 @@ class DefinitionScreen extends StatelessWidget {
                       ),
                       for (var def in part.definitions)
                         Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text.rich(TextSpan(
-                                text:
-                                    "${(part.definitions.indexOf(def) + 1).toString()}. ",
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 4.0),
+                                child: Container(
+                                  width: 36,
+                                  child: Text("${(part.definitions.indexOf(def) + 1).toString()}. ", textAlign: TextAlign.end)
+                                ),
+                              ),
+                              Expanded(
+                                child: Text.rich(TextSpan(
                                 children: [
                                   part.definitionMarkup
-                                              ?.map((e) =>
-                                                  RichHtml(e, theme, context)
-                                                      .build())
-                                              .toList()[
-                                          part.definitions.indexOf(def)] ??
-                                      TextSpan(text: def.split('\n').first)
-                                ])))
+                                    ?.map((e) =>
+                                      RichHtml(e, theme, context)
+                                        .build())
+                                    .toList()[part.definitions.indexOf(def)] ??
+                                    TextSpan(text: def.split('\n').first)
+                                ]))
+                              )
+                            ]
+                          )
+                        )
                     ]
                   ]
                 ],

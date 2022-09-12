@@ -8,6 +8,9 @@
     "buttons": {
         "ok": "OK"
     },
+    "lookup": {
+        "glossary": "Appendix:Glossary"
+    },
     "definitionScreen": {
         "etymology": "Etymology",
         "tabs": {

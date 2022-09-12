@@ -1,13 +1,23 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vortaron/views/home.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  
+
+  GoogleFonts.config.allowRuntimeFetching = kDebugMode;
+
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('fonts/roboto/LICENSE.txt');
+    yield LicenseEntryWithLineBreaks(['roboto'], license);
+  });
+
   runApp(
     EasyLocalization(
       supportedLocales: [Locale('en'), /*Locale('eo')*/],
@@ -26,6 +36,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Vortaron',
       theme: ThemeData(
+        textTheme: GoogleFonts.robotoTextTheme(),
         useMaterial3: true,
         primarySwatch: Colors.amber, // TODO: make it red when a "cheating" mode is on
       ),
