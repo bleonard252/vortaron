@@ -87,6 +87,7 @@
     "errors": {
         "notAWord": "{word} is not a word in {wordLang} in the {appLang} dictionary.",
         "notFound": "{word} does not exist in the {appLang} dictionary.",
-        "generic": "An error occurred."
+        "generic": "An error occurred.",
+        "unknown": "An unknown error occurred: {}"
     }
 }

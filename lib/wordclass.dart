@@ -11,16 +11,17 @@ class Definition {
   final bool lemma;
   /// The audio clip URL that says the word.
   final String? audioClip;
+  final List<DefTranslation> translations;
   Definition({
     required this.partsOfSpeech,
     this.etymology = const [],
     required this.hyphenation,
     this.lemma = true,
-    this.audioClip
+    this.audioClip,
+    this.translations = const []
   });
 }
 
-const _emptyList = [];
 /// A block of definitions, associated by part of speech.
 class PartDefinition {
   final partOfSpeech? part;
@@ -36,6 +37,23 @@ class PartDefinition {
     this.etymology = 0,
     required this.definitions,
     this.definitionMarkup
+  });
+}
+
+class DefTranslation {
+  /// A short description of the meaning being translated.
+  final String? gloss;
+  /// The translated word or phrase.
+  final String translation;
+  /// Target language name (in app language).
+  final String language;
+  /// Qualifiers or conditions given, i.e. formal or academic.
+  final List<String> qualifiers;
+  DefTranslation({
+    this.gloss,
+    required this.translation,
+    required this.language,
+    this.qualifiers = const []
   });
 }
 

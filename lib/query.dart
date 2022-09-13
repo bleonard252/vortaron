@@ -18,12 +18,27 @@ const enValidPartsOfSpeech = {
   "Interjection": partOfSpeech.INTERJECTION
 };
 
+final _transTopRegex = RegExp(r'^\s*[{]{2}trans-top\|(.*?)(?:\|id=.*?)?[}]{2}\s*$', multiLine: true);
+final _transBottomRegex = RegExp(r'^\s*[{]{2}trans-bottom[}]{2}\s*$', multiLine: true);
+final _transEntryOuterRegex = RegExp(r'^\*:* (.*?): (.*)$', multiLine: true);
+//final _transEntryInnerRegex = RegExp(r'[{]{2}t\+?\|(?:[a-z-]{2,})\|(.*?)\|?([mfn]?)\|?((?:[a-z0-9-]+=.*?\|?)*)[}]{2}', multiLine: true);
+final _wikitextTemplateRegex = RegExp(r'[{]{2}(.*?)\|(.*\|?)[}]{2}', multiLine: true);
+
 /// Looks up the word in the Wiktionary.
 Future<Definition?> lookupWord(String word, String inLanguageCode, String forLanguage) async {
   String inLanguage = tr("languages."+inLanguageCode);
-  var response = await Requests.get("https://en.wiktionary.com/w/api.php?action=parse&format=json&prop=text|revid|displaytitle|categories&redirects=true&page=$word#$inLanguage");
-  if (response.json().containsKey("error")) {
-    throw Exception("$word was not found in the $forLanguage dictionary");
+  var prefetch = await Requests.get("https://en.wiktionary.org/w/api.php?format=json&action=parse&prop=sections&page=$word");
+  if (prefetch.json().containsKey("error")) {
+    throw Exception(tr("errors.notFound", namedArgs: {"word": word, "appLang": forLanguage, "wordLang": inLanguage}));
+  }
+  final sectionId = prefetch.json()["parse"]["sections"].firstWhere((e) => e["line"] == inLanguage, orElse: () => -1)["index"];
+  if (sectionId == -1) {
+    throw Exception(tr("errors.notAWord", namedArgs: {"word": word, "appLang": forLanguage, "wordLang": inLanguage}));
+  }
+  var response = await Requests.get("https://en.wiktionary.org/w/api.php?action=parse&format=json&prop=text|wikitext|properties|revid|displaytitle|categories&redirects=true&page=$word&section=$sectionId");
+  //var opening_response = await Requests.get("https://en.wiktionary.org/w/api.php?action=parse&format=json&prop=text|wikitext|properties|revid|displaytitle|categories&redirects=true&page=$word&section=0");
+  if (prefetch.json().containsKey("error")) {
+    throw Exception(tr("errors.unknown", args: [prefetch.json()["error"]]));
   }
   //print(response.data);
   var document = parse(response.json()["parse"]["text"]["*"]);
@@ -114,13 +129,47 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   for (var category in response.json()["parse"]["categories"]) {
     categories.add(category["*"]);
   }
+  // Translations
+  List<DefTranslation> translations = [];
+  for (final top in _transTopRegex.allMatches(response.json()["parse"]["wikitext"]["*"])) {
+    final gloss = top.group(1);
+    final bottom = _transBottomRegex.firstMatch(response.json()["parse"]["wikitext"]["*"].substring(top.end))!;
+    final search = response.json()["parse"]["wikitext"]["*"].substring(top.end+1, top.end+bottom.start);
+    for (final check in _transEntryOuterRegex.allMatches(search)) {
+      final lang = check.group(1)!;
+      final search = check.group(2)?.split(RegExp(r"[,;] ")) ?? [];
+      if (search.isEmpty) continue;
+      for (final entry in search) {
+        final templates = _wikitextTemplateRegex.allMatches(entry).toList();
+        final _tind = templates.indexWhere((element) => element.group(1) == "t" || element.group(1) == "t+");
+        if (_tind == -1) continue;
+        final _translation = templates[_tind]
+        .group(2)?.split("|")[1];
+        if (_translation == null) continue;
+        // Example below:
+        //  g1  g2
+        //   0  0  1        2 3           4
+        // {{t+|el|κουβέντα|f|tr=kouvénta|sc=Grek}}
+        final qualifiers = templates
+        .where((element) => element.group(1) == "qualifier")
+        .map((e) => e.group(2)?.split("|")[0]);
+        translations.add(DefTranslation(
+          language: lang,
+          translation: _translation,
+          gloss: gloss,
+          qualifiers: qualifiers.whereType<String>().toList(),
+        ));
+      }
+    }
+  }
   //return
   final def = Definition(
     partsOfSpeech: partDefinitions,
     etymology: etymologies,
     hyphenation: hyphenation,
     lemma: categories.contains(inLanguage+" lemmas"),
-    audioClip: html.querySelector("audio")?.firstChild?.attributes["src"]?.replaceFirst("//", "https://")
+    audioClip: html.querySelector("audio")?.firstChild?.attributes["src"]?.replaceFirst("//", "https://"),
+    translations: translations
   );
   return def;
 }
