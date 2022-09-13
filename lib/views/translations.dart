@@ -26,10 +26,17 @@ class TranslationsTab extends StatelessWidget {
                 child: ListTile(
                   title: Text(translation.language),
                   subtitle: Text(
-                    _areMultipleSenses
+                    (_areMultipleSenses
                       ? "${translation.gloss}\n  ${translation.translation}"
-                      : translation.translation
+                      : translation.translation)
                     +
+                    (translation.gender == GrammaticalGender.M
+                    ? " (M)"
+                    : translation.gender == GrammaticalGender.F
+                    ? " (F)"
+                    : translation.gender == GrammaticalGender.N
+                    ? " (N)"
+                    : "")+
                     (translation.qualifiers.isNotEmpty
                       ? " (${translation.qualifiers.join(", ")})"
                       : ""
@@ -48,10 +55,17 @@ class TranslationsTab extends StatelessWidget {
                 child: ListTile(
                   title: Text(translation.language),
                   subtitle: Text(
-                    _areMultipleSenses
+                    (_areMultipleSenses
                       ? "${translation.gloss}\n  ${translation.translation}"
-                      : translation.translation
+                      : translation.translation)
                     +
+                    (translation.gender == GrammaticalGender.M
+                    ? " (M)"
+                    : translation.gender == GrammaticalGender.F
+                    ? " (F)"
+                    : translation.gender == GrammaticalGender.N
+                    ? " (N)"
+                    : "")+
                     (translation.qualifiers.isNotEmpty
                       ? " (${translation.qualifiers.join(", ")})"
                       : ""

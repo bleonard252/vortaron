@@ -47,14 +47,25 @@ class DefTranslation {
   final String translation;
   /// Target language name (in app language).
   final String language;
+  final GrammaticalGender? gender;
   /// Qualifiers or conditions given, i.e. formal or academic.
   final List<String> qualifiers;
   DefTranslation({
     this.gloss,
     required this.translation,
     required this.language,
-    this.qualifiers = const []
+    this.qualifiers = const [],
+    this.gender
   });
+}
+
+enum GrammaticalGender {
+  /// Masculine
+  M,
+  /// Feminine
+  F,
+  /// Neuter/neutral. Not necessarily the same as genderless
+  N
 }
 
 enum partOfSpeech {

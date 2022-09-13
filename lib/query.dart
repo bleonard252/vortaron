@@ -35,7 +35,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   if (sectionId == -1) {
     throw Exception(tr("errors.notAWord", namedArgs: {"word": word, "appLang": forLanguage, "wordLang": inLanguage}));
   }
-  var response = await Requests.get("https://en.wiktionary.org/w/api.php?action=parse&format=json&prop=text|wikitext|properties|revid|displaytitle|categories&redirects=true&page=$word&section=$sectionId");
+  var response = await Requests.get("https://en.wiktionary.org/w/api.php?action=parse&format=json&prop=text|wikitext|properties|displaytitle&redirects=true&page=$word&section=$sectionId");
   //var opening_response = await Requests.get("https://en.wiktionary.org/w/api.php?action=parse&format=json&prop=text|wikitext|properties|revid|displaytitle|categories&redirects=true&page=$word&section=0");
   if (prefetch.json().containsKey("error")) {
     throw Exception(tr("errors.unknown", args: [prefetch.json()["error"]]));
@@ -126,9 +126,9 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   }
   // Categories
   List<String> categories = [];
-  for (var category in response.json()["parse"]["categories"]) {
-    categories.add(category["*"]);
-  }
+  // for (var category in response.json()["parse"]["categories"]) {
+  //   categories.add(category["*"]);
+  // }
   // Translations
   List<DefTranslation> translations = [];
   for (final top in _transTopRegex.allMatches(response.json()["parse"]["wikitext"]["*"])) {
@@ -143,9 +143,10 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
         final templates = _wikitextTemplateRegex.allMatches(entry).toList();
         final _tind = templates.indexWhere((element) => element.group(1) == "t" || element.group(1) == "t+");
         if (_tind == -1) continue;
-        final _translation = templates[_tind]
-        .group(2)?.split("|")[1];
-        if (_translation == null) continue;
+        final parameters = templates[_tind]
+        .group(2)?.split("|");
+        final _translation = parameters?[1];
+        if (parameters == null || _translation == null) continue;
         // Example below:
         //  g1  g2
         //   0  0  1        2 3           4
@@ -157,6 +158,10 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
           language: lang,
           translation: _translation,
           gloss: gloss,
+          gender: parameters.contains("m") ? GrammaticalGender.M
+          : parameters.contains("f") ? GrammaticalGender.F
+          : parameters.contains("n") ? GrammaticalGender.N
+          : null,
           qualifiers: qualifiers.whereType<String>().toList(),
         ));
       }
