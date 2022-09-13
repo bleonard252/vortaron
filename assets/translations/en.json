@@ -91,7 +91,8 @@
     "languages": {
         "en": "English",
         "eo": "Esperanto",
-        "la": "Latin"
+        "la": "Latin",
+        "de": "German"
     },
     "errors": {
         "notAWord": "{word} is not a word in {wordLang} in the {appLang} dictionary.",

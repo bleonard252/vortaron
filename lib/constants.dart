@@ -1,5 +1,5 @@
 /// A full list of known word language codes.
-const knownWordLanguages = ["en", "eo", "la"];
+const knownWordLanguages = ["en", "eo", "la", "de"];
 
 /// A full list of known app/dictionary language codes.
 const knownAppLanguages = ["en"];
@@ -26,6 +26,7 @@ const languageNames = {
     "English": "en",
     "Esperanto": "eo",
     "Latin": "la",
+    "German": "de"
   }
 };
 

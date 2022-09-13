@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
                   DropdownMenuItem(child: Text("languages.en").tr(), value: "en"),
                   DropdownMenuItem(child: Text("languages.eo").tr(), value: "eo"),
                   DropdownMenuItem(child: Text("languages.la").tr(), value: "la"),
+                  DropdownMenuItem(child: Text("languages.de").tr(), value: "de"),
                 ],
                 onChanged: (newValue) {
                   setState(() => language = newValue.toString());

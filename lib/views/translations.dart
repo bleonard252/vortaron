@@ -12,6 +12,7 @@ class TranslationsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (definition.translations.isEmpty) return Center(child: Text("No translations found!"));
     final _fromKnownLanguages = definition.translations.where((t) => languageNames["en"]!.keys.contains(t.language));
     final _fromOtherLanguages = definition.translations.where((t) => !languageNames["en"]!.keys.contains(t.language));
     final __firstGloss = definition.translations.first.gloss;
