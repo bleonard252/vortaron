@@ -11,6 +11,15 @@
     "lookup": {
         "glossary": "Appendix:Glossary"
     },
+    "thesaurus": {
+        "synonyms": "Synonyms",
+        "antonyms": "Antonyms",
+        "hyponyms": "Hyponyms",
+        "hypernyms": "Hypernyms",
+        "meronyms": "Meronyms",
+        "holonyms": "Holonyms",
+        "homonyms": "Homonyms"
+    },
     "definitionScreen": {
         "etymology": "Etymology",
         "tabs": {

@@ -21,56 +21,50 @@ class TranslationsTab extends StatelessWidget {
         SliverList(
           delegate: SliverChildBuilderDelegate((context, index) {
             final translation = _fromKnownLanguages.elementAt(index);
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  title: Text(translation.language),
-                  subtitle: Text(
-                    (_areMultipleSenses
-                      ? "${translation.gloss}\n  ${translation.translation}"
-                      : translation.translation)
-                    +
-                    (translation.gender == GrammaticalGender.M
-                    ? " (M)"
-                    : translation.gender == GrammaticalGender.F
-                    ? " (F)"
-                    : translation.gender == GrammaticalGender.N
-                    ? " (N)"
-                    : "")+
-                    (translation.qualifiers.isNotEmpty
-                      ? " (${translation.qualifiers.join(", ")})"
-                      : ""
-                    )),
-                  trailing: Icon(Mdi.chevronRight),
-                  onTap: () => {},
-                ),
+              return ListTile(
+                title: Text(translation.language),
+                subtitle: Text(
+                  (_areMultipleSenses
+                    ? "${translation.gloss}\n  ${translation.translation}"
+                    : translation.translation)
+                  +
+                  (translation.gender == GrammaticalGender.M
+                  ? " (M)"
+                  : translation.gender == GrammaticalGender.F
+                  ? " (F)"
+                  : translation.gender == GrammaticalGender.N
+                  ? " (N)"
+                  : "")+
+                  (translation.qualifiers.isNotEmpty
+                    ? " (${translation.qualifiers.join(", ")})"
+                    : ""
+                  )),
+                trailing: Icon(Mdi.chevronRight),
+                onTap: () => {},
               );
           }, childCount: _fromKnownLanguages.length),
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate((context, index) {
             final translation = _fromOtherLanguages.elementAt(index);
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  title: Text(translation.language),
-                  subtitle: Text(
-                    (_areMultipleSenses
-                      ? "${translation.gloss}\n  ${translation.translation}"
-                      : translation.translation)
-                    +
-                    (translation.gender == GrammaticalGender.M
-                    ? " (M)"
-                    : translation.gender == GrammaticalGender.F
-                    ? " (F)"
-                    : translation.gender == GrammaticalGender.N
-                    ? " (N)"
-                    : "")+
-                    (translation.qualifiers.isNotEmpty
-                      ? " (${translation.qualifiers.join(", ")})"
-                      : ""
-                    )),
-                ),
+              return ListTile(
+                title: Text(translation.language),
+                subtitle: Text(
+                  (_areMultipleSenses
+                    ? "${translation.gloss}\n  ${translation.translation}"
+                    : translation.translation)
+                  +
+                  (translation.gender == GrammaticalGender.M
+                  ? " (M)"
+                  : translation.gender == GrammaticalGender.F
+                  ? " (F)"
+                  : translation.gender == GrammaticalGender.N
+                  ? " (N)"
+                  : "")+
+                  (translation.qualifiers.isNotEmpty
+                    ? " (${translation.qualifiers.join(", ")})"
+                    : ""
+                  )),
               );
           }, childCount: _fromOtherLanguages.length),
         ),

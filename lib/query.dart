@@ -1,7 +1,7 @@
 import 'package:requests/requests.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:html/parser.dart' show parse, parseFragment;
-import 'package:html/dom.dart' show Element;
+import 'package:html/dom.dart' show Element, Node;
 
 import 'package:vortaron/wordclass.dart';
 
@@ -31,7 +31,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   if (prefetch.json().containsKey("error")) {
     throw Exception(tr("errors.notFound", namedArgs: {"word": word, "appLang": forLanguage, "wordLang": inLanguage}));
   }
-  final sectionId = prefetch.json()["parse"]["sections"].firstWhere((e) => e["line"] == inLanguage, orElse: () => -1)["index"];
+  final sectionId = prefetch.json()["parse"]["sections"].firstWhere((e) => e["line"] == inLanguage, orElse: () => {"index": -1})["index"];
   if (sectionId == -1) {
     throw Exception(tr("errors.notAWord", namedArgs: {"word": word, "appLang": forLanguage, "wordLang": inLanguage}));
   }
@@ -66,6 +66,15 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
     }
   }
   var html = parse(langSection.map<String>((e) => e.outerHtml).join());
+  var data = _QueryResults(
+    word: word,
+    wordLanguage: forLanguage,
+    appLanguage: inLanguage,
+    articleSectionId: int.tryParse(sectionId) ?? -1,
+    html: html,
+    json: response.json(),
+    wikitext: response.json()["parse"]["wikitext"]["*"]
+  );
   List<PartDefinition> partDefinitions = [];
   for (var list in langSection.where((element) => element.localName?.toLowerCase() == "ol")) {
     Element? header = list.previousElementSibling;
@@ -129,6 +138,28 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   // for (var category in response.json()["parse"]["categories"]) {
   //   categories.add(category["*"]);
   // }
+  // Thesaurus
+  final thesaurusSort = (List<String> sort, String prefixShort, String prefixLong) {
+    for (final block in _wikitextTemplateRegex.allMatches(data.wikitext ?? "").where((t) => t.group(1) == prefixShort || t.group(1) == prefixLong)) {
+      final initialIndex = sort.length;
+      for (final String val in block.group(2)?.split("|").skip(1) ?? []) {
+        if (val == ";") continue;
+        if (val.startsWith("Thesaurus:")) continue; // TODO: load the thesaurus page
+        if (val.contains("=")) continue; // TODO: additional fields, according to https://en.wiktionary.org/wiki/Template:synonyms
+        sort.add(val);
+      }
+    }
+    return sort;
+  };
+  final thesaurusDefinition = ThesaurusDefinition(
+    synonyms: thesaurusSort([], "syn", "synonyms"),
+    antonyms: thesaurusSort([], "ant", "antonyms"),
+    hyponyms: thesaurusSort([], "hypo", "hyponyms"),
+    hypernyms: thesaurusSort([], "hyper", "hypernyms"),
+    meronyms: thesaurusSort([], "mero", "meronyms"),
+    holonyms: thesaurusSort([], "holo", "holonyms")
+  );
+
   // Translations
   List<DefTranslation> translations = [];
   for (final top in _transTopRegex.allMatches(response.json()["parse"]["wikitext"]["*"])) {
@@ -174,7 +205,48 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
     hyphenation: hyphenation,
     lemma: categories.contains(inLanguage+" lemmas"),
     audioClip: html.querySelector("audio")?.firstChild?.attributes["src"]?.replaceFirst("//", "https://"),
-    translations: translations
+    translations: translations,
+    response: data,
+    thesaurus: thesaurusDefinition
   );
   return def;
+}
+
+abstract class QueryResults {
+  final String word;
+  final String wordLanguage;
+  final String appLanguage;
+  final String? wikitext;
+  final Node? html;
+  final dynamic json;
+  final int articleSectionId;
+  QueryResults({
+    required this.word,
+    required this.wordLanguage,
+    required this.appLanguage,
+    required this.wikitext,
+    required this.html,
+    required this.json,
+    required this.articleSectionId
+  });
+}
+
+class _QueryResults implements QueryResults {
+  final String word;
+  final String wordLanguage;
+  final String appLanguage;
+  final String? wikitext;
+  final Node? html;
+  final dynamic json;
+    /// The section of the [word] article for [wordLanguage].
+  final int articleSectionId;
+  _QueryResults({
+    required this.word,
+    required this.wordLanguage,
+    required this.appLanguage,
+    this.wikitext,
+    this.html,
+    this.json,
+    this.articleSectionId = -1
+  });
 }

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mdi/mdi.dart';
+import 'package:vortaron/views/thesaurus.dart';
 import 'package:vortaron/views/translations.dart';
 import 'package:vortaron/widgets/html.dart';
 import 'package:vortaron/wordclass.dart';
@@ -160,9 +161,7 @@ class DefinitionScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Center(
-              child: Icon(Mdi.alertCircleOutline),
-            ),
+            ThesaurusTab(thesaurus: definition.thesaurus),
             TranslationsTab(definition: definition),
           ],
         ),
