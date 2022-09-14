@@ -6,6 +6,7 @@ class Definition {
   final List<PartDefinition> partsOfSpeech;
   /// The word's etymology string.
   final List<String> etymology;
+  final List<dynamic> etymologyMarkup;
   /// The hyphenation or name of this word.
   final String hyphenation;
   /// Whether this word is the lemma.
@@ -18,16 +19,18 @@ class Definition {
   Definition({
     required this.partsOfSpeech,
     this.etymology = const [],
+    this.etymologyMarkup = const [],
     required this.hyphenation,
     this.lemma = true,
     this.audioClip,
     this.translations = const [],
     this.response,
-    this.thesaurus = const ThesaurusDefinition()
+    this.thesaurus = const ThesaurusDefinition.empty()
   });
 }
 
 class ThesaurusDefinition {
+  final String language;
   final List<String> synonyms;
   final List<String> antonyms;
   final List<String> homonyms;
@@ -35,7 +38,9 @@ class ThesaurusDefinition {
   final List<String> hyponyms;
   final List<String> meronyms;
   final List<String> holonyms;
+  const ThesaurusDefinition.empty() : this(language: "");
   const ThesaurusDefinition({
+    required this.language,
     this.synonyms = const [],
     this.antonyms = const [],
     this.homonyms = const [],
@@ -48,7 +53,7 @@ class ThesaurusDefinition {
 
 /// A block of definitions, associated by part of speech.
 class PartDefinition {
-  final partOfSpeech? part;
+  final PartOfSpeech? part;
 
   /// Which etymology from the list it is under. Invalid values will be added
   /// to the end.
@@ -95,8 +100,9 @@ enum GrammaticalGender {
   N
 }
 
-enum partOfSpeech {
+enum PartOfSpeech {
   NOUN,
+  PRONOUN,
   VERB,
   ADJECTIVE,
   ADVERB,
@@ -105,5 +111,7 @@ enum partOfSpeech {
   ARTICLE,
   CONJUNCTION,
   PREPOSITION,
-  INTERJECTION
+  PHRASE,
+  PREP_PHRASE,
+  INTERJECTION,
 }

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:mdi/mdi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vortaron/main.dart';
 import 'package:vortaron/query.dart';
 import 'package:vortaron/views/definition.dart';
+
+import '../query2.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,7 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController controller = TextEditingController();
-  String language = "";
+  String language = sharedPreferences.getString("wordLanguage") ?? "";
   @override
   Widget build(BuildContext context) {
     SharedPreferences.getInstance().then((instance) => setState(() => language = instance.getString("wordLanguage") ?? (language != "" ? language : "en")));
@@ -40,32 +43,8 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        final _x = lookupWord(controller.text, language, "English");
-                        SpinningScreen.showIn(context, until: _x);
-                        _x.then((definition) => definition != null ? Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => DefinitionScreen(definition: definition))
-                        ) : showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text("errors.generic").tr(),
-                            actions: [
-                              TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
-                            ]
-                          )
-                        )).onError((error, stackTrace) => showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text(
-                              error.toString().contains("not a word") ? "errors.notAWord" 
-                              : error.toString().contains("not found") ? "errors.notFound" 
-                              : "errors.generic")
-                              .tr(namedArgs: {"word": controller.text, "wordLang": language, "appLang": "English"}),
-                            actions: [
-                              TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
-                            ]
-                          )
-                        ));
-                      }, 
+                        doLookup(of: context, word: controller.value.text, wordLanguageCode: language == "" ? "en" : language, appLanguage: "English");
+                      },
                       child: Text("homeScreen.defineAction").tr()
                     ),
                   ),

@@ -75,8 +75,9 @@
         "uncountable": "Uncountable",
         "irregular": "Irregular",
         "irregularHigh": "Highly irregular",
-        "partOfSpeech": {
+        "PartOfSpeech": {
             "NOUN": "Noun",
+            "PRONOUN": "Pronoun",
             "VERB": "Verb",
             "ADJECTIVE": "Adjective",
             "ADVERB": "Adverb",
@@ -85,6 +86,8 @@
             "ARTICLE": "Article",
             "CONJUNCTION": "Conjunction",
             "PREPOSITION": "Preposition",
+            "PHRASE": "Phrase",
+            "PREP_PHRASE": "Prepositional phrase",
             "INTERJECTION": "Interjection"
         }
     },

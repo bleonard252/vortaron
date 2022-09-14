@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import 'package:html/dom.dart' as dom;
 import 'package:vortaron/constants.dart';
 import 'package:vortaron/query.dart';
+import 'package:vortaron/query2.dart';
 import 'package:vortaron/views/home.dart';
 
 import '../views/definition.dart';
@@ -56,33 +57,7 @@ class RichHtml {
                 if (this.context == null) {
                   return; // don't do anything if there is no context
                 }
-                final context = this.context!;
-                final langCode = link.language == null ? "en" : languageNames["en"]?[link.language] ?? "en";
-                final _x = lookupWord(link.article, langCode, "English");
-                SpinningScreen.showIn(context, until: _x);
-                _x.then((definition) => definition != null ? Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => DefinitionScreen(definition: definition))
-                ) : showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text("errors.generic").tr(),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
-                    ]
-                  )
-                )).onError((error, stackTrace) => showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text(
-                      error.toString().contains("not a word") ? "errors.notAWord" 
-                      : error.toString().contains("not found") ? "errors.notFound" 
-                      : "errors.generic")
-                      .tr(namedArgs: {"word": link.article, "wordLang": langCode, "appLang": "English"}),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: Text("buttons.ok").tr())
-                    ]
-                  )
-                ));
+                doLookup(of: this.context!, word: link.article, wordLanguageCode: languageNames['en']![link.language ?? "English"]!);
               }
           );
         } else if (element.attributes['href']?.startsWith("/wiki/") == true && link.article == tr("lookup.glossary")) {
@@ -143,6 +118,8 @@ class RichHtml {
           )
         );
       } else if (element.localName == 'div' && element.classes.contains("citation-whole")) {
+        return emptySpan; // an empty span; don't show these
+      } else if (element.localName == 'span' && element.classes.contains("nyms")) {
         return emptySpan; // an empty span; don't show these
       }
     }

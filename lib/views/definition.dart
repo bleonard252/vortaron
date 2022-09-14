@@ -87,11 +87,11 @@ class DefinitionScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(definition.etymology[i]),
+                        child: Text.rich(RichHtml(definition.etymologyMarkup[i], theme, context).build()),
                       ),
                     ],
                     for (var part in definition.partsOfSpeech
-                        .where((e) => e.etymology == i)) ...[
+                        .where((e) => e.etymology == i || definition.etymology.length == 0)) ...[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Wrap(

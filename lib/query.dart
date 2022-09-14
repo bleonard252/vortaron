@@ -6,16 +6,19 @@ import 'package:html/dom.dart' show Element, Node;
 import 'package:vortaron/wordclass.dart';
 
 const enValidPartsOfSpeech = {
-  "Noun": partOfSpeech.NOUN,
-  "Verb": partOfSpeech.VERB,
-  "Adjective": partOfSpeech.ADJECTIVE,
-  "Adverb": partOfSpeech.ADVERB,
-  "Particle": partOfSpeech.PARTICLE,
-  "Determiner": partOfSpeech.DETERMINER,
-  "Article": partOfSpeech.ARTICLE,
-  "Conjunction": partOfSpeech.CONJUNCTION,
-  "Preposition": partOfSpeech.PREPOSITION,
-  "Interjection": partOfSpeech.INTERJECTION
+  "Noun": PartOfSpeech.NOUN,
+  "Pronoun": PartOfSpeech.PRONOUN,
+  "Verb": PartOfSpeech.VERB,
+  "Adjective": PartOfSpeech.ADJECTIVE,
+  "Adverb": PartOfSpeech.ADVERB,
+  "Particle": PartOfSpeech.PARTICLE,
+  "Determiner": PartOfSpeech.DETERMINER,
+  "Article": PartOfSpeech.ARTICLE,
+  "Conjunction": PartOfSpeech.CONJUNCTION,
+  "Preposition": PartOfSpeech.PREPOSITION,
+  "Phrase": PartOfSpeech.PHRASE,
+  "Prepositional phrase": PartOfSpeech.PREP_PHRASE,
+  "Interjection": PartOfSpeech.INTERJECTION
 };
 
 final _transTopRegex = RegExp(r'^\s*[{]{2}trans-top\|(.*?)(?:\|id=.*?)?[}]{2}\s*$', multiLine: true);
@@ -68,8 +71,8 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   var html = parse(langSection.map<String>((e) => e.outerHtml).join());
   var data = _QueryResults(
     word: word,
-    wordLanguage: forLanguage,
-    appLanguage: inLanguage,
+    wordLanguage: inLanguage,
+    appLanguage: forLanguage,
     articleSectionId: int.tryParse(sectionId) ?? -1,
     html: html,
     json: response.json(),
@@ -152,6 +155,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
     return sort;
   };
   final thesaurusDefinition = ThesaurusDefinition(
+    language: inLanguage,
     synonyms: thesaurusSort([], "syn", "synonyms"),
     antonyms: thesaurusSort([], "ant", "antonyms"),
     hyponyms: thesaurusSort([], "hypo", "hyponyms"),
@@ -202,6 +206,7 @@ Future<Definition?> lookupWord(String word, String inLanguageCode, String forLan
   final def = Definition(
     partsOfSpeech: partDefinitions,
     etymology: etymologies,
+    etymologyMarkup: etymologiesMarkup,
     hyphenation: hyphenation,
     lemma: categories.contains(inLanguage+" lemmas"),
     audioClip: html.querySelector("audio")?.firstChild?.attributes["src"]?.replaceFirst("//", "https://"),
